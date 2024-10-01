@@ -1,6 +1,10 @@
 //
 // Created by jonasotto on 9/15/22.
 //
+// Updated by cnboggs
+//
+// Datasheet:
+// https://gzhls.at/blob/ldb/a/0/f/6/3971c1b0ff98ce53e924c6ce3ffb16905172.pdf
 
 #define DT_DRV_COMPAT pixart_pmw3389
 
