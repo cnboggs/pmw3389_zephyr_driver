@@ -8,12 +8,12 @@ You can integrate it in your application by adding the project to your west mani
 ```yaml
 manifest:
   remotes:
-    - name: teamspatzenhirn
-      url-base: https://github.com/teamspatzenhirn
+    - name: cnboggs
+      url-base: https://github.com/cnboggs
   projects:
     - name: pmw3389_zephyr_driver
-      remote: teamspatzenhirn
-      revision: <current commit hash>
+      remote: cnboggs
+      revision: zephyr
       path: modules/pmw3389
 ```
 
