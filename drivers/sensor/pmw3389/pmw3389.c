@@ -44,7 +44,8 @@ struct pmw3389_data {
 #define REG_Frame_Capture	        0x12
 #define REG_Power_Up_Reset	        0x3A
 #define REG_Inverse_Product_ID	    0x3F
-#define Expected_Inverse_Product_ID 0xB9
+// Datasheet lists this wrong?
+#define Expected_Inverse_Product_ID 0xB8
 #define REG_Motion_Burst	        0x50
 #define REG_RawData_Burst	        0x64
 
