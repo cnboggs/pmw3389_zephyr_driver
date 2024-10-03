@@ -1,9 +1,8 @@
-# Copyright (c) 2022 Team Spatzenhirn
+# Copyright (c) 2024 Noah Boggs 
 # SPDX-License-Identifier: Apache-2.0
 
-
 description: |
-  Motion Sensor
+  PMW3389 Motion Sensor
 
 compatible: "pixart,pmw3389"
 
@@ -15,3 +14,7 @@ properties:
     required: true
     description: |
       Resolution in counts per inch, multiples of 50, from 50 to 16000
+  properties:
+    irq-gpios:
+      type: phandle-array
+      required: true
