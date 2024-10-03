@@ -18,8 +18,7 @@
 #include "pmw3389.h"
 
 #include <zephyr/logging/log.h>
-/*LOG_MODULE_REGISTER(pmw3389, CONFIG_PMW3389_LOG_LEVEL);*/
-LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
+LOG_MODULE_REGISTER(pmw3389, CONFIG_PMW3389_LOG_LEVEL);
 
 /* Timings defined by spec */
 #define T_NCS_SCLK	    1			            /* 120 ns */
@@ -827,12 +826,14 @@ static int pmw3389_init_irq(const struct device *dev)
 	if (err) {
 		LOG_ERR("Cannot add IRQ GPIO callback");
 	}
+    LOG_DBG("PMW3389 Initialized IRQ GPIO!");
 
 	return err;
 }
 
 static int pmw3389_init(const struct device *dev)
 {
+    LOG_DBG("PMW3389 Initializing");
 	struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
 	int err;
@@ -871,6 +872,8 @@ static int pmw3389_init(const struct device *dev)
 
 static int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
+    LOG_DBG("PMW3389 SAMPLE FETCH");
+
 	struct pmw3389_data *data = dev->data;
 	uint8_t buf[PMW3389_BURST_SIZE];
 
@@ -910,6 +913,8 @@ static int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel ch
 static int pmw3389_channel_get(const struct device *dev, enum sensor_channel chan,
 			       struct sensor_value *val)
 {
+    LOG_DBG("PMW3389 CHANNEL GET");
+
 	struct pmw3389_data *data = dev->data;
 
 	if (unlikely(!data->ready)) {
@@ -939,6 +944,8 @@ static int pmw3389_trigger_set(const struct device *dev,
 			       const struct sensor_trigger *trig,
 			       sensor_trigger_handler_t handler)
 {
+    LOG_DBG("PMW3389 TRIGGER SET");
+
 	struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
 	int err;
@@ -979,6 +986,8 @@ static int pmw3389_attr_set(const struct device *dev, enum sensor_channel chan,
 			    enum sensor_attribute attr,
 			    const struct sensor_value *val)
 {
+    LOG_DBG("PMW3389 ATTR SET");
+
 	struct pmw3389_data *data = dev->data;
 	int err;
 
