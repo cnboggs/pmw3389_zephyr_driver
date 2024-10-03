@@ -90,7 +90,7 @@ LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
 
 /* Sensor identification values */
 #define PMW3389_PRODUCT_ID			0x42
-#define PMW3389_FIRMWARE_ID			0x04 // TODO: doubt this is the correct id
+#define PMW3389_FIRMWARE_ID			0x04
 
 /* Max register count readable in a single motion burst */
 #define PMW3389_MAX_BURST_SIZE			12
@@ -105,8 +105,8 @@ LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
 /* Rest_En position in Config2 register. */
 #define PMW3389_REST_EN_POS			5
 
-#define PMW3389_MAX_CPI				12000
-#define PMW3389_MIN_CPI				100
+#define PMW3389_MAX_CPI				16000
+#define PMW3389_MIN_CPI				50
 
 
 #define SPI_WRITE_BIT				BIT(7)
@@ -431,31 +431,38 @@ static int burst_write(const struct device *dev, uint8_t reg, const uint8_t *buf
 
 static int update_cpi(const struct device *dev, uint32_t cpi)
 {
-	/* Set resolution with CPI step of 100 cpi
+	/* Set resolution with CPI step of 50 cpi
 	 * 0x00: 100 cpi (minimum cpi)
-	 * 0x01: 200 cpi
+	 * 0x01: 150 cpi
 	 * :
-	 * 0x31: 5000 cpi (default cpi)
+	 * 0x1E: 1600 cpi (default cpi)
 	 * :
-	 * 0x77: 12000 cpi (maximum cpi)
+	 * 0x77: 16000 cpi (maximum cpi)
 	 */
 
-	if ((cpi > PMW3389_MAX_CPI) || (cpi < PMW3389_MIN_CPI)) {
-		LOG_ERR("CPI value %u out of range", cpi);
-		return -EINVAL;
-	}
+    // Convert CPI to resolution value by dividing by 50
+    uint16_t resolution_value = cpi / 50;
 
-	/* Convert CPI to register value */
-	uint8_t value = (cpi / 100) - 1;
+    // Split into high and low byte
+    uint8_t resolution_h = (resolution_value >> 8) & 0xFF;  // High byte
+    uint8_t resolution_l = resolution_value & 0xFF;          // Low byte
 
-	LOG_DBG("Setting CPI to %u (reg value 0x%x)", cpi, value);
+    LOG_DBG("Setting CPI to %u (Resolution_H: 0x%x, Resolution_L: 0x%x)", cpi, resolution_h, resolution_l);
 
-	int err = reg_write(dev, PMW3389_REG_CONFIG1, value);
-	if (err) {
-		LOG_ERR("Failed to change CPI");
-	}
+    // Write the high byte (Resolution_H) to the resolution high register
+    int err = reg_write(dev, PMW3389_REG_RESOLUTION_H, resolution_h);
+    if (err) {
+        LOG_ERR("Failed to write Resolution_H");
+        return err;
+    }
 
-	return err;
+    // Write the low byte (Resolution_L) to the resolution low register
+    err = reg_write(dev, PMW3389_REG_RESOLUTION_L, resolution_l);
+    if (err) {
+        LOG_ERR("Failed to write Resolution_L");
+    }
+
+    return err;
 }
 
 static int update_downshift_time(const struct device *dev, uint8_t reg_addr,
