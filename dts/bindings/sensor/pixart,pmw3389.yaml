@@ -14,7 +14,6 @@ properties:
     required: true
     description: |
       Resolution in counts per inch, multiples of 50, from 50 to 16000
-  properties:
-    irq-gpios:
-      type: phandle-array
-      required: true
+  irq-gpios:
+    type: phandle-array
+    required: true
