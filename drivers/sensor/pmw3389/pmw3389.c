@@ -15,7 +15,7 @@
 #include <zephyr/drivers/spi.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/sys/byteorder.h>
-#include <sensor/pmw3389.h>
+#include "pmw3389.h"
 
 #include <zephyr/logging/log.h>
 /*LOG_MODULE_REGISTER(pmw3389, CONFIG_PMW3389_LOG_LEVEL);*/
