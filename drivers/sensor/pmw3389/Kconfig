@@ -15,9 +15,9 @@ if PMW3389
 config PMW3389_CPI
 	int "PMW3389's default CPI"
 	default 1600
-	range 100 12000
+	range 100 16000
 	help
-	  Default CPI value.
+	  Default CPI value (set in increments of 50).
 
 config PMW3389_RUN_DOWNSHIFT_TIME_MS
 	int "PMW3389's default RUN mode downshift time"
