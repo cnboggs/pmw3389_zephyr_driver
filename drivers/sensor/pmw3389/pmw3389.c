@@ -1096,4 +1096,18 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 /**/
 /*DT_INST_FOREACH_STATUS_OKAY(PMW3389_DEFINE)*/
 
+static struct pmw3389_data data0;
+static const struct pmw3389_config config0 = {
+	.irq_gpio = GPIO_DT_SPEC_INST_GET(0, irq_gpios),
+	.bus = {
+		.bus = DEVICE_DT_GET(DT_INST_BUS(0)),
+		.config = {
+			.frequency = DT_INST_PROP(0, spi_max_frequency),
+			.operation = SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA,
+			.slave = DT_INST_REG_ADDR(0),
+		},
+	},
+	.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(0)),
+};
+
 DEVICE_DT_INST_DEFINE(0, pmw3389_init, NULL, &data0, &config0, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, NULL);
