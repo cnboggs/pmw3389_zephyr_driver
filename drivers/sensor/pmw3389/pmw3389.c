@@ -1065,8 +1065,13 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 	.attr_set     = pmw3389_attr_set,
 };
 
+static void log_pmw3389_define(int instance)
+{
+    LOG_DBG("PMW3389_DEFINE expanding for instance %d", instance);
+}
+
 #define PMW3389_DEFINE(n)						       \
-    _Pragma("message \"PMW3389_DEFINE expanding for instance \" #n") \
+    log_pmw3389_define(n); \
 	static struct pmw3389_data data##n;				       \
                                                                      \
 	static const struct pmw3389_config config##n = {		       \
