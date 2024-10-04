@@ -1065,33 +1065,35 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 	.attr_set     = pmw3389_attr_set,
 };
 
-#define PMW3389_DEFINE(n)						       \
-	static struct pmw3389_data data##n;				       \
-                                                                     \
-	static const struct pmw3389_config config##n = {		       \
-		.irq_gpio = GPIO_DT_SPEC_INST_GET(n, irq_gpios),	       \
-		.bus = {						       \
-			.bus = DEVICE_DT_GET(DT_INST_BUS(n)),		       \
-			.config = {					       \
-				.frequency = DT_INST_PROP(n,		       \
-							  spi_max_frequency),  \
-				.operation = SPI_WORD_SET(8) |		       \
-					     SPI_TRANSFER_MSB |		       \
-					     SPI_MODE_CPOL | SPI_MODE_CPHA,    \
-				.slave = DT_INST_REG_ADDR(n),		       \
-			},						       \
-		},							       \
-		.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(n)),	       \
-	};								       \
-									       \
-	DEVICE_DT_INST_DEFINE(n, pmw3389_init, NULL, &data##n, &config##n,     \
-			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,	       \
-			      &pmw3389_driver_api);
+/*#define PMW3389_DEFINE(n)						       \*/
+/*	static struct pmw3389_data data##n;				       \*/
+/*                                                                     \*/
+/*	static const struct pmw3389_config config##n = {		       \*/
+/*		.irq_gpio = GPIO_DT_SPEC_INST_GET(n, irq_gpios),	       \*/
+/*		.bus = {						       \*/
+/*			.bus = DEVICE_DT_GET(DT_INST_BUS(n)),		       \*/
+/*			.config = {					       \*/
+/*				.frequency = DT_INST_PROP(n,		       \*/
+/*							  spi_max_frequency),  \*/
+/*				.operation = SPI_WORD_SET(8) |		       \*/
+/*					     SPI_TRANSFER_MSB |		       \*/
+/*					     SPI_MODE_CPOL | SPI_MODE_CPHA,    \*/
+/*				.slave = DT_INST_REG_ADDR(n),		       \*/
+/*			},						       \*/
+/*		},							       \*/
+/*		.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(n)),	       \*/
+/*	};								       \*/
+/*									       \*/
+/*	DEVICE_DT_INST_DEFINE(n, pmw3389_init, NULL, &data##n, &config##n,     \*/
+/*			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,	       \*/
+/*			      &pmw3389_driver_api);*/
+/**/
+/*#if DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389)*/
+/*    _Pragma("message \"DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389) is TRUE\"")*/
+/*#else*/
+/*    _Pragma("message \"DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389) is FALSE\"")*/
+/*#endif*/
+/**/
+/*DT_INST_FOREACH_STATUS_OKAY(PMW3389_DEFINE)*/
 
-#if DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389)
-    _Pragma("message \"DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389) is TRUE\"")
-#else
-    _Pragma("message \"DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389) is FALSE\"")
-#endif
-
-DT_INST_FOREACH_STATUS_OKAY(PMW3389_DEFINE)
+DEVICE_DT_INST_DEFINE(0, pmw3389_init, NULL, &data0, &config0, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, NULL);
