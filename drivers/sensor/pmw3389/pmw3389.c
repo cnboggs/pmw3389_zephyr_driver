@@ -833,7 +833,7 @@ static int pmw3389_init_irq(const struct device *dev)
 
 static int pmw3389_init(const struct device *dev)
 {
-    k_msleep(2000);
+    k_msleep(10000);
     LOG_INF("PMW3389 Initializing");
     LOG_INF("PMW3389 Initializing");
     LOG_INF("PMW3389 Initializing");
