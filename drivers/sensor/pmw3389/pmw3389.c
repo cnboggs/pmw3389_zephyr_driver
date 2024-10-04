@@ -1089,33 +1089,3 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 			      &pmw3389_driver_api);
 
 DT_INST_FOREACH_STATUS_OKAY(PMW3389_DEFINE)
-
-int main(void)
-{
-    LOG_INF("PMW3389");
-    LOG_INF("PMW3389");
-    LOG_INF("PMW3389");
-    LOG_INF("PMW3389");
-    LOG_INF("PMW3389");
-    LOG_INF("PMW3389");
-    LOG_INF("PMW3389");
-
-    const struct device *pmw3389_dev = device_get_binding("pmw3389");
-
-    if (!pmw3389_dev) {
-        LOG_ERR("PMW3389 device not found!");
-    } else {
-        LOG_INF("PMW3389 device found.");
-
-        // Manually invoke the initialization to see if it logs
-        int ret = pmw3389_init(pmw3389_dev);
-        if (ret) {
-            LOG_ERR("PMW3389 initialization failed with error code: %d", ret);
-        } else {
-            LOG_INF("PMW3389 initialization succeeded!");
-        }
-    }
-
-    return 0;
-}
-
