@@ -1066,7 +1066,6 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 };
 
 #define PMW3389_DEFINE(n)						       \
-    _Pragma("message \"PMW3389_DEFINE expanding for instance \"") \
 	static struct pmw3389_data data##n;				       \
                                                                      \
 	static const struct pmw3389_config config##n = {		       \
@@ -1088,5 +1087,11 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 	DEVICE_DT_INST_DEFINE(n, pmw3389_init, NULL, &data##n, &config##n,     \
 			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,	       \
 			      &pmw3389_driver_api);
+
+#if DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389)
+    _Pragma("message \"DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389) is TRUE\"")
+#else
+    _Pragma("message \"DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389) is FALSE\"")
+#endif
 
 DT_INST_FOREACH_STATUS_OKAY(PMW3389_DEFINE)
