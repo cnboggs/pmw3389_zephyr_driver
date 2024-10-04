@@ -1067,7 +1067,7 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 
 #define PMW3389_DEFINE(n)						       \
 	static struct pmw3389_data data##n;				       \
-									       \
+    LOG_DBG("PMW3389 define device instance: %d", n);                \
 	static const struct pmw3389_config config##n = {		       \
 		.irq_gpio = GPIO_DT_SPEC_INST_GET(n, irq_gpios),	       \
 		.bus = {						       \
