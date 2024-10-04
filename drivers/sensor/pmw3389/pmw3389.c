@@ -834,40 +834,46 @@ static int pmw3389_init_irq(const struct device *dev)
 static int pmw3389_init(const struct device *dev)
 {
     LOG_DBG("PMW3389 Initializing");
-	struct pmw3389_data *data = dev->data;
-	const struct pmw3389_config *config = dev->config;
-	int err;
-
-	data->dev = dev;
-	k_work_init(&data->trigger_handler_work, trigger_handler);
-
-	if (!spi_is_ready_dt(&config->bus)) {
-		LOG_ERR("SPI device not ready");
-		return -ENODEV;
-	}
-
-	if (!device_is_ready(config->cs_gpio.port)) {
-		LOG_ERR("SPI CS device not ready");
-		return -ENODEV;
-	}
-
-	err = gpio_pin_configure_dt(&config->cs_gpio, GPIO_OUTPUT_INACTIVE);
-	if (err) {
-		LOG_ERR("Cannot configure SPI CS GPIO");
-		return err;
-	}
-
-	err = pmw3389_init_irq(dev);
-	if (err) {
-		return err;
-	}
-
-	k_work_init_delayable(&data->init_work, pmw3389_async_init);
-
-	k_work_schedule(&data->init_work,
-			K_MSEC(async_init_delay[data->async_init_step]));
-
-	return err;
+    LOG_DBG("PMW3389 Initializing");
+    LOG_DBG("PMW3389 Initializing");
+    LOG_DBG("PMW3389 Initializing");
+    LOG_DBG("PMW3389 Initializing");
+    LOG_DBG("PMW3389 Initializing");
+	/*struct pmw3389_data *data = dev->data;*/
+	/*const struct pmw3389_config *config = dev->config;*/
+	/*int err;*/
+	/**/
+	/*data->dev = dev;*/
+	/*k_work_init(&data->trigger_handler_work, trigger_handler);*/
+	/**/
+	/*if (!spi_is_ready_dt(&config->bus)) {*/
+	/*	LOG_ERR("SPI device not ready");*/
+	/*	return -ENODEV;*/
+	/*}*/
+	/**/
+	/*if (!device_is_ready(config->cs_gpio.port)) {*/
+	/*	LOG_ERR("SPI CS device not ready");*/
+	/*	return -ENODEV;*/
+	/*}*/
+	/**/
+	/*err = gpio_pin_configure_dt(&config->cs_gpio, GPIO_OUTPUT_INACTIVE);*/
+	/*if (err) {*/
+	/*	LOG_ERR("Cannot configure SPI CS GPIO");*/
+	/*	return err;*/
+	/*}*/
+	/**/
+	/*err = pmw3389_init_irq(dev);*/
+	/*if (err) {*/
+	/*	return err;*/
+	/*}*/
+	/**/
+	/*k_work_init_delayable(&data->init_work, pmw3389_async_init);*/
+	/**/
+	/*k_work_schedule(&data->init_work,*/
+	/*		K_MSEC(async_init_delay[data->async_init_step]));*/
+	/**/
+	/*return err;*/
+    return 0;
 }
 
 static int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
