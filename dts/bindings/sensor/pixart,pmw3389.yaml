@@ -12,6 +12,9 @@ include: spi-device.yaml
 properties:
   resolution:
     type: int
-    required: true
+    required: false 
     description: |
       Resolution in counts per inch, multiples of 50, from 50 to 16000
+  irq-gpios:
+    type: phandle-array
+    required: false
