@@ -653,6 +653,46 @@ static int pmw3389_async_init_fw_load_continue(const struct device *dev)
 	return err;
 }
 
+static int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
+{
+    LOG_DBG("PMW3389 SAMPLE FETCH");
+
+	struct pmw3389_data *data = dev->data;
+	uint8_t buf[PMW3389_BURST_SIZE];
+
+	if (unlikely(chan != SENSOR_CHAN_ALL)) {
+		return -ENOTSUP;
+	}
+
+	if (unlikely(!data->ready)) {
+		LOG_DBG("Device is not initialized yet");
+		return -EBUSY;
+	}
+
+	int err = motion_burst_read(dev, buf, sizeof(buf));
+
+	if (!err) {
+		int16_t x = sys_get_le16(&buf[PMW3389_DX_POS]);
+		int16_t y = sys_get_le16(&buf[PMW3389_DY_POS]);
+
+		if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_0)) {
+			data->x = -x;
+			data->y = y;
+		} else if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_90)) {
+			data->x = y;
+			data->y = x;
+		} else if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_180)) {
+			data->x = x;
+			data->y = -y;
+		} else if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_270)) {
+			data->x = -y;
+			data->y = -x;
+		}
+	}
+
+	return err;
+}
+
 static int pmw3389_async_init_fw_load_verify(const struct device *dev)
 {
 	int err;
@@ -700,7 +740,7 @@ static int pmw3389_async_init_fw_load_verify(const struct device *dev)
     if (dev == NULL) {
         LOG_ERR("Failed to get PMW3389 binding");
     } else {
-        int ret = pmw3389_sample_fetch(dev);
+        int ret = pmw3389_sample_fetch(dev, SENSOR_CHAN_ALL);
         if (ret == 0) {
             LOG_INF("PMW3389 sample fetched successfully");
         } else {
@@ -892,46 +932,6 @@ static int pmw3389_init(const struct device *dev)
 
 	k_work_schedule(&data->init_work,
 			K_MSEC(async_init_delay[data->async_init_step]));
-
-	return err;
-}
-
-static int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
-{
-    LOG_DBG("PMW3389 SAMPLE FETCH");
-
-	struct pmw3389_data *data = dev->data;
-	uint8_t buf[PMW3389_BURST_SIZE];
-
-	if (unlikely(chan != SENSOR_CHAN_ALL)) {
-		return -ENOTSUP;
-	}
-
-	if (unlikely(!data->ready)) {
-		LOG_DBG("Device is not initialized yet");
-		return -EBUSY;
-	}
-
-	int err = motion_burst_read(dev, buf, sizeof(buf));
-
-	if (!err) {
-		int16_t x = sys_get_le16(&buf[PMW3389_DX_POS]);
-		int16_t y = sys_get_le16(&buf[PMW3389_DY_POS]);
-
-		if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_0)) {
-			data->x = -x;
-			data->y = y;
-		} else if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_90)) {
-			data->x = y;
-			data->y = x;
-		} else if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_180)) {
-			data->x = x;
-			data->y = -y;
-		} else if (IS_ENABLED(CONFIG_PMW3389_ORIENTATION_270)) {
-			data->x = -y;
-			data->y = -x;
-		}
-	}
 
 	return err;
 }
