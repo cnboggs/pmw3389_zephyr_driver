@@ -14,7 +14,7 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/__assert.h>
 
-LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
 
 // Undefine to fall back to reading each register separately
 #define FETCH_USING_BURST_READ
