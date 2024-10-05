@@ -695,6 +695,19 @@ static int pmw3389_async_init_fw_load_verify(const struct device *dev)
 		LOG_ERR("Cannot enable REST modes");
 	}
 
+    /*const struct device *dev = device_get_binding("PMW3389_0");*/
+    const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(motion_sensor));
+    if (dev == NULL) {
+        LOG_ERR("Failed to get PMW3389 binding");
+    } else {
+        int ret = pmw3389_sample_fetch(dev);
+        if (ret == 0) {
+            LOG_INF("PMW3389 sample fetched successfully");
+        } else {
+            LOG_ERR("PMW3389 sample fetch failed");
+        }
+    }
+
 	return err;
 }
 
