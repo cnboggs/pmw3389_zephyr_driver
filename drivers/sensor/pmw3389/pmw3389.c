@@ -337,6 +337,7 @@ int pwm3389_get_raw_data(struct device *dev, uint8_t *out)
 
 int pmw3389_init(const struct device *dev)
 {
+    k_sleep(K_MSEC(5000));
 	LOG_INF("Initializing PMW3389");
     LOG_INF("Initializing PMW3389");
     LOG_INF("Initializing PMW3389");
