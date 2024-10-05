@@ -929,6 +929,14 @@ static int pmw3389_init(const struct device *dev)
 		return err;
 	}
 
+    int state = gpio_pin_get_dt(&config->irq_gpio);
+    LOG_DBG("IRQ pin state: %d", state);
+    LOG_DBG("IRQ GPIO Port: %s", config->irq_gpio.port->name);
+    LOG_DBG("IRQ GPIO Pin: %d", config->irq_gpio.pin);
+    LOG_DBG("IRQ GPIO Flags: 0x%x", config->irq_gpio.dt_flags);
+
+    irq_handler(NULL, &data->irq_gpio_cb, BIT(config->irq_gpio.pin));
+
 	k_work_init_delayable(&data->init_work, pmw3389_async_init);
 
 	k_work_schedule(&data->init_work,
