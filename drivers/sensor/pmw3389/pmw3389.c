@@ -831,6 +831,16 @@ static int pmw3389_init_irq(const struct device *dev)
 	return err;
 }
 
+int write_register_nr(const struct spi_dt_spec *spec, uint8_t reg, uint8_t data)
+{
+	// Set first address bit to 1 to indicate write
+	uint8_t tx_data[] = {reg | 0b10000000, data};
+	struct spi_buf tx_buffer = {.buf = tx_data, .len = sizeof(tx_data)};
+	struct spi_buf_set tx_buffer_set = {.buffers = &tx_buffer, .count = 1};
+
+	return spi_write_dt(spec, &tx_buffer_set);
+}
+
 static int pmw3389_init(const struct device *dev)
 {
     LOG_INF("PMW3389 Initializing");
@@ -843,9 +853,7 @@ static int pmw3389_init(const struct device *dev)
 	const struct pmw3389_config *config = dev->config;
 	int err;
 
-    // Send a simple initialization command (for example, reset)
-    uint8_t reset_cmd[] = {0x5A};  // Replace with an actual command
-    err = spi_write_dt(&config->bus, reset_cmd, sizeof(reset_cmd));
+    err = write_register_nr(&config->bus, REG_Power_Up_Reset, 0x5A))
     if (err < 0) {
         LOG_ERR("Failed to send reset command to PMW3389");
         return err;
@@ -1112,18 +1120,18 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 /**/
 /*DT_INST_FOREACH_STATUS_OKAY(PMW3389_DEFINE)*/
 
-/*static struct pmw3389_data data0;*/
-/*static const struct pmw3389_config config0 = {*/
-/*	.irq_gpio = GPIO_DT_SPEC_INST_GET(0, irq_gpios),*/
-/*	.bus = {*/
-/*		.bus = DEVICE_DT_GET(DT_INST_BUS(0)),*/
-/*		.config = {*/
-/*			.frequency = DT_INST_PROP(0, spi_max_frequency),*/
-/*			.operation = SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA,*/
-/*			.slave = DT_INST_REG_ADDR(0),*/
-/*		},*/
-/*	},*/
-/*	.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(0)),*/
-/*};*/
+static struct pmw3389_data data0;
+static const struct pmw3389_config config0 = {
+	.irq_gpio = GPIO_DT_SPEC_INST_GET(0, irq_gpios),
+	.bus = {
+		.bus = DEVICE_DT_GET(DT_INST_BUS(0)),
+		.config = {
+			.frequency = DT_INST_PROP(0, spi_max_frequency),
+			.operation = SPI_WORD_SET(8) | SPI_TRANSFER_MSB | SPI_MODE_CPOL | SPI_MODE_CPHA,
+			.slave = DT_INST_REG_ADDR(0),
+		},
+	},
+	.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(0)),
+};
 
-DEVICE_DT_INST_DEFINE(0, pmw3389_init, NULL, NULL, NULL, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, NULL);
+DEVICE_DT_INST_DEFINE(0, pmw3389_init, NULL, &data0, &config0, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, NULL);
