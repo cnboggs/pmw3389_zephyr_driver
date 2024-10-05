@@ -735,19 +735,6 @@ static int pmw3389_async_init_fw_load_verify(const struct device *dev)
 		LOG_ERR("Cannot enable REST modes");
 	}
 
-    /*const struct device *dev = device_get_binding("PMW3389_0");*/
-    /*const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(motion_sensor));*/
-    if (dev == NULL) {
-        LOG_ERR("Failed to get PMW3389 binding");
-    } else {
-        int ret = pmw3389_sample_fetch(dev, SENSOR_CHAN_ALL);
-        if (ret == 0) {
-            LOG_INF("PMW3389 sample fetched successfully");
-        } else {
-            LOG_ERR("PMW3389 sample fetch failed");
-        }
-    }
-
 	return err;
 }
 
@@ -861,6 +848,16 @@ static void pmw3389_async_init(struct k_work *work)
 		if (data->async_init_step == ASYNC_INIT_STEP_COUNT) {
 			data->ready = true;
 			LOG_INF("PMW3389 initialized");
+            if (dev == NULL) {
+                LOG_ERR("Failed to get PMW3389 binding");
+            } else {
+                int ret = pmw3389_sample_fetch(dev, SENSOR_CHAN_ALL);
+                if (ret == 0) {
+                    LOG_INF("PMW3389 sample fetched successfully");
+                } else {
+                    LOG_ERR("PMW3389 sample fetch failed");
+                }
+            }
 		} else {
 			k_work_schedule(&data->init_work,
 					K_MSEC(async_init_delay[
