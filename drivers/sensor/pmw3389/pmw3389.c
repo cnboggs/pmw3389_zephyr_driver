@@ -836,6 +836,7 @@ static void pmw3389_async_init(struct k_work *work)
 	struct pmw3389_data *data = CONTAINER_OF(work, struct pmw3389_data,
 						 init_work.work);
 	const struct device *dev = data->dev;
+    const struct pmw3389_config *config = dev->config;
 
     k_work_init(&data->trigger_handler_work, trigger_handler);
 
