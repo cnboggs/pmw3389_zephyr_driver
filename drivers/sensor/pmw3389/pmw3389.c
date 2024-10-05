@@ -837,10 +837,6 @@ static void pmw3389_async_init(struct k_work *work)
 						 init_work.work);
 	const struct device *dev = data->dev;
 
-
-
-
-
 	LOG_DBG("PMW3389 async init step %d", data->async_init_step);
 
 	data->err = async_init_fn[data->async_init_step](dev);
@@ -929,14 +925,13 @@ static int pmw3389_init(const struct device *dev)
 		return err;
 	}
 
-    int state = gpio_pin_get_dt(&config->irq_gpio);
-    LOG_DBG("IRQ pin state: %d", state);
-    LOG_DBG("IRQ GPIO Port: %s", config->irq_gpio.port->name);
-    LOG_DBG("IRQ GPIO Pin: %d", config->irq_gpio.pin);
-    LOG_DBG("IRQ GPIO Flags: 0x%x", config->irq_gpio.dt_flags);
-
-    irq_handler(NULL, &data->irq_gpio_cb, BIT(config->irq_gpio.pin));
-
+    /*int state = gpio_pin_get_dt(&config->irq_gpio);*/
+    /*LOG_DBG("IRQ pin state: %d", state);*/
+    /*LOG_DBG("IRQ GPIO Port: %s", config->irq_gpio.port->name);*/
+    /*LOG_DBG("IRQ GPIO Pin: %d", config->irq_gpio.pin);*/
+    /*LOG_DBG("IRQ GPIO Flags: 0x%x", config->irq_gpio.dt_flags);*/
+    /**/
+    /*irq_handler(NULL, &data->irq_gpio_cb, BIT(config->irq_gpio.pin));*/
 	k_work_init_delayable(&data->init_work, pmw3389_async_init);
 
 	k_work_schedule(&data->init_work,
@@ -1119,7 +1114,7 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 		.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(n)),	       \
 	};								       \
 									       \
-	DEVICE_DT_INST_DEFINE(n, pmw3389_init, NULL, &data##n, &config##n,     \
+	SENSOR_DEVICE_DT_INST_DEFINE(n, pmw3389_init, NULL, &data##n, &config##n,     \
 			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,	       \
 			      &pmw3389_driver_api);
 
