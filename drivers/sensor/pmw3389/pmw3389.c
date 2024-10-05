@@ -177,6 +177,7 @@ static int (* const async_init_fn[ASYNC_INIT_STEP_COUNT])(const struct device *d
 
 static int spi_cs_ctrl(const struct device *dev, bool enable)
 {
+    LOG_DBG("SPI CS CTRL");
 	const struct pmw3389_config *config = dev->config;
 	int err;
 
@@ -198,6 +199,7 @@ static int spi_cs_ctrl(const struct device *dev, bool enable)
 
 static int reg_read(const struct device *dev, uint8_t reg, uint8_t *buf)
 {
+    LOG_DBG("REG READ");
 	int err;
 	struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
@@ -257,6 +259,7 @@ static int reg_read(const struct device *dev, uint8_t reg, uint8_t *buf)
 
 static int reg_write(const struct device *dev, uint8_t reg, uint8_t val)
 {
+    LOG_DBG("REG WRITE");
 	int err;
 	struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
@@ -304,6 +307,7 @@ static int reg_write(const struct device *dev, uint8_t reg, uint8_t val)
 static int motion_burst_read(const struct device *dev, uint8_t *buf,
 			     size_t burst_size)
 {
+    LOG_DBG("BURST READ");
 	int err;
 	struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
@@ -377,6 +381,7 @@ static int motion_burst_read(const struct device *dev, uint8_t *buf,
 static int burst_write(const struct device *dev, uint8_t reg, const uint8_t *buf,
 		       size_t size)
 {
+    LOG_DBG("BURST WRITE");
 	int err;
 	struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
@@ -431,6 +436,7 @@ static int burst_write(const struct device *dev, uint8_t reg, const uint8_t *buf
 
 static int update_cpi(const struct device *dev, uint32_t cpi)
 {
+    LOG_DBG("UPDATE CPI");
     // TODO: update this to handle 50 as min
 	/* Set resolution with CPI step of 50 cpi
 	 * 0x00: 100 cpi (minimum cpi)
@@ -469,6 +475,7 @@ static int update_cpi(const struct device *dev, uint32_t cpi)
 static int update_downshift_time(const struct device *dev, uint8_t reg_addr,
 				 uint32_t time)
 {
+    LOG_DBG("UPDATE DOWNSHIFT TIME");
 	/* Set downshift time:
 	 * - Run downshift time (from Run to Rest1 mode)
 	 * - Rest 1 downshift time (from Rest1 to Rest2 mode)
@@ -534,6 +541,7 @@ static int update_sample_time(const struct device *dev,
 			      uint8_t reg_addr_upper,
 			      uint32_t sample_time)
 {
+    LOG_DBG("UPDATE SAMPLE TIME");
 	/* Set sample time for the Rest1-Rest3 modes.
 	 * Values above 0x09B0 will trigger internal watchdog reset.
 	 */
@@ -567,6 +575,7 @@ static int update_sample_time(const struct device *dev,
 static int toggle_rest_modes(const struct device *dev, uint8_t reg_addr,
 			     bool enable)
 {
+    LOG_DBG("TOGGLE REST MODE");
 	uint8_t value;
 	int err = reg_read(dev, reg_addr, &value);
 
@@ -692,6 +701,7 @@ static int pmw3389_async_init_fw_load_verify(const struct device *dev)
 static void irq_handler(const struct device *gpiob, struct gpio_callback *cb,
 			uint32_t pins)
 {
+    LOG_DBG("IRQ HANDLER");
 	int err;
 	struct pmw3389_data *data = CONTAINER_OF(cb, struct pmw3389_data,
 						 irq_gpio_cb);
@@ -710,6 +720,7 @@ static void irq_handler(const struct device *gpiob, struct gpio_callback *cb,
 
 static void trigger_handler(struct k_work *work)
 {
+    LOG_DBG("TRIGGER HANDLER");
 	sensor_trigger_handler_t handler;
 	int err = 0;
 	struct pmw3389_data *data = CONTAINER_OF(work, struct pmw3389_data,
