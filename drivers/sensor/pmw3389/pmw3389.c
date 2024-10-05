@@ -338,153 +338,158 @@ int pwm3389_get_raw_data(struct device *dev, uint8_t *out)
 int pmw3389_init(const struct device *dev)
 {
 	LOG_INF("Initializing PMW3389");
-	const struct pmw3389_config *config = dev->config;
-
-	const struct spi_dt_spec *spec = &config->spi;
-
-	// SPI: Manual CS control, Zephyr does delay between pulling NCS low and start, but does not
-	//  wait after transmission. NCS is not pulled high automatically, as configured
-
-	// 1. Apply Power
-	// 2. Drive NCS high, then low (done by driver)
-	// 3. Write 0x5A to Power_Up_Reset register
-	LOG_DBG("Resetting device");
-	TRY_R(write_register_nr(spec, REG_Power_Up_Reset, 0x5A));
-	TRY(spi_release_dt(spec));
-	// 4. Wait for at least 50ms.
-	k_sleep(K_MSEC(50));
-
-	// 5. Read from registers 0x02, 0x03, 0x04, 0x05 and 0x06 one time regardless of the motion
-	// pin state.
-	uint8_t addresses[] = {0x02, 0x03, 0x04, 0x05, 0x06};
-	uint8_t dummy_read[sizeof(addresses)];
-	TRY(read_multiple(spec, addresses, sizeof(addresses), dummy_read));
-
-	// (6. Perform SROM download [Refer to 7.1 SROM Download].)
-	// TODO: Find out why/if that is necessary, and which SROM to steal from where
-
-	// 7. Write to register 0x3D with value 0x80.
-	// Last op was read if SROM DL was not performed -> wait T_SRW
-	k_busy_wait(DELAY_READ_WRITE);
-	TRY_R(write_register_nr(spec, 0x3D, 0x80));
-
-	k_busy_wait(DELAY_WRITE_READ);
-
-	// 8. Read register 0x3D at 1ms interval until value 0xC0 is obtained or read up to
-	//    55ms. This register read interval must be carried out at 1ms interval with timing
-	//    tolerance of +/- 1%.
-	LOG_DBG("Waiting for proper value in 0x3D...");
-	while (true) {
-		// Do not wait T_SRR since the 1ms is way longer anyway
-		uint8_t result_3D = 0;
-		TRY_R(read_register_nr(spec, 0x3D, &result_3D));
-		LOG_DBG(" Got %#x", result_3D);
-		if (result_3D == 0xC0) {
-			break;
-		}
-		k_busy_wait(1000);
-	}
-
-	// 9. Write to register 0x3D with value 0x00.
-	k_busy_wait(DELAY_READ_WRITE);
-	TRY_R(write_register_nr(spec, 0x3D, 0x00));
-
-	// 10. Write 0x20 to register 0x10
-	// 0x10 is Config2, 0x20=0b00100000 enables the REST mode and sets CPI to addect both X and
-	// Y
-	k_busy_wait(DELAY_WRITE_WRITE);
-	TRY_R(write_register_nr(spec, 0x10, 0x20));
-
-	// 11. Load configuration for other registers.
-
-	// Set resolution
-	LOG_DBG("Configuring resolution: %d cpi", config->resolution_cpi);
-	if (config->resolution_cpi < 50 || config->resolution_cpi > 16000) {
-		LOG_ERR("Resolution of %d is out of range [%d, %d]", config->resolution_cpi, 50,
-			16000);
-		spi_release_dt(spec);
-		return -EINVAL;
-	}
-	if (config->resolution_cpi % 50 != 0) {
-		LOG_WRN("Resolution of %d is not a multiple of 50cpi!", config->resolution_cpi);
-	}
-	uint16_t resolution = config->resolution_cpi / 50;
-	k_busy_wait(DELAY_WRITE_WRITE);
-	TRY_R(write_register_nr(spec, REG_Resolution_H, resolution >> 8));
-	k_busy_wait(DELAY_WRITE_WRITE);
-	TRY_R(write_register_nr(spec, REG_Resolution_L, resolution & 0xFF));
-
-	// Verify communication
-	LOG_DBG("Verifying communication by reading product ID");
-	k_busy_wait(DELAY_WRITE_READ);
-	uint8_t received_product_id = 0;
-	TRY_R(read_register_nr(spec, REG_Product_ID, &received_product_id));
-	if (received_product_id != Expected_Product_ID) {
-		LOG_ERR("Read product ID %#x, but expected %#x, could not verify communication "
-			"with sensor!",
-			received_product_id, Expected_Product_ID);
-		spi_release_dt(spec);
-		return -EIO;
-	}
-	LOG_DBG("Verified product ID!");
-	LOG_DBG("Verifying communication by reading inverse product ID");
-	k_busy_wait(DELAY_READ_READ);
-	TRY_R(read_register_nr(spec, REG_Inverse_Product_ID, &received_product_id));
-	if (received_product_id != Expected_Inverse_Product_ID) {
-		LOG_ERR("Read inverse product ID %#x, but expected %#x, could not verify "
-			"communication with sensor!",
-			received_product_id, Expected_Inverse_Product_ID);
-		spi_release_dt(spec);
-		return -EIO;
-	}
-	LOG_DBG("Verified inverse product ID!");
-
-	TRY(spi_release_dt(spec));
+    LOG_INF("Initializing PMW3389");
+    LOG_INF("Initializing PMW3389");
+    LOG_INF("Initializing PMW3389");
+	/*const struct pmw3389_config *config = dev->config;*/
+	/**/
+	/*const struct spi_dt_spec *spec = &config->spi;*/
+	/**/
+	/*// SPI: Manual CS control, Zephyr does delay between pulling NCS low and start, but does not*/
+	/*//  wait after transmission. NCS is not pulled high automatically, as configured*/
+	/**/
+	/*// 1. Apply Power*/
+	/*// 2. Drive NCS high, then low (done by driver)*/
+	/*// 3. Write 0x5A to Power_Up_Reset register*/
+	/*LOG_DBG("Resetting device");*/
+	/*TRY_R(write_register_nr(spec, REG_Power_Up_Reset, 0x5A));*/
+	/*TRY(spi_release_dt(spec));*/
+	/*// 4. Wait for at least 50ms.*/
+	/*k_sleep(K_MSEC(50));*/
+	/**/
+	/*// 5. Read from registers 0x02, 0x03, 0x04, 0x05 and 0x06 one time regardless of the motion*/
+	/*// pin state.*/
+	/*uint8_t addresses[] = {0x02, 0x03, 0x04, 0x05, 0x06};*/
+	/*uint8_t dummy_read[sizeof(addresses)];*/
+	/*TRY(read_multiple(spec, addresses, sizeof(addresses), dummy_read));*/
+	/**/
+	/*// (6. Perform SROM download [Refer to 7.1 SROM Download].)*/
+	/*// TODO: Find out why/if that is necessary, and which SROM to steal from where*/
+	/**/
+	/*// 7. Write to register 0x3D with value 0x80.*/
+	/*// Last op was read if SROM DL was not performed -> wait T_SRW*/
+	/*k_busy_wait(DELAY_READ_WRITE);*/
+	/*TRY_R(write_register_nr(spec, 0x3D, 0x80));*/
+	/**/
+	/*k_busy_wait(DELAY_WRITE_READ);*/
+	/**/
+	/*// 8. Read register 0x3D at 1ms interval until value 0xC0 is obtained or read up to*/
+	/*//    55ms. This register read interval must be carried out at 1ms interval with timing*/
+	/*//    tolerance of +/- 1%.*/
+	/*LOG_DBG("Waiting for proper value in 0x3D...");*/
+	/*while (true) {*/
+	/*	// Do not wait T_SRR since the 1ms is way longer anyway*/
+	/*	uint8_t result_3D = 0;*/
+	/*	TRY_R(read_register_nr(spec, 0x3D, &result_3D));*/
+	/*	LOG_DBG(" Got %#x", result_3D);*/
+	/*	if (result_3D == 0xC0) {*/
+	/*		break;*/
+	/*	}*/
+	/*	k_busy_wait(1000);*/
+	/*}*/
+	/**/
+	/*// 9. Write to register 0x3D with value 0x00.*/
+	/*k_busy_wait(DELAY_READ_WRITE);*/
+	/*TRY_R(write_register_nr(spec, 0x3D, 0x00));*/
+	/**/
+	/*// 10. Write 0x20 to register 0x10*/
+	/*// 0x10 is Config2, 0x20=0b00100000 enables the REST mode and sets CPI to addect both X and*/
+	/*// Y*/
+	/*k_busy_wait(DELAY_WRITE_WRITE);*/
+	/*TRY_R(write_register_nr(spec, 0x10, 0x20));*/
+	/**/
+	/*// 11. Load configuration for other registers.*/
+	/**/
+	/*// Set resolution*/
+	/*LOG_DBG("Configuring resolution: %d cpi", config->resolution_cpi);*/
+	/*if (config->resolution_cpi < 50 || config->resolution_cpi > 16000) {*/
+	/*	LOG_ERR("Resolution of %d is out of range [%d, %d]", config->resolution_cpi, 50,*/
+	/*		16000);*/
+	/*	spi_release_dt(spec);*/
+	/*	return -EINVAL;*/
+	/*}*/
+	/*if (config->resolution_cpi % 50 != 0) {*/
+	/*	LOG_WRN("Resolution of %d is not a multiple of 50cpi!", config->resolution_cpi);*/
+	/*}*/
+	/*uint16_t resolution = config->resolution_cpi / 50;*/
+	/*k_busy_wait(DELAY_WRITE_WRITE);*/
+	/*TRY_R(write_register_nr(spec, REG_Resolution_H, resolution >> 8));*/
+	/*k_busy_wait(DELAY_WRITE_WRITE);*/
+	/*TRY_R(write_register_nr(spec, REG_Resolution_L, resolution & 0xFF));*/
+	/**/
+	/*// Verify communication*/
+	/*LOG_DBG("Verifying communication by reading product ID");*/
+	/*k_busy_wait(DELAY_WRITE_READ);*/
+	/*uint8_t received_product_id = 0;*/
+	/*TRY_R(read_register_nr(spec, REG_Product_ID, &received_product_id));*/
+	/*if (received_product_id != Expected_Product_ID) {*/
+	/*	LOG_ERR("Read product ID %#x, but expected %#x, could not verify communication "*/
+	/*		"with sensor!",*/
+	/*		received_product_id, Expected_Product_ID);*/
+	/*	spi_release_dt(spec);*/
+	/*	return -EIO;*/
+	/*}*/
+	/*LOG_DBG("Verified product ID!");*/
+	/*LOG_DBG("Verifying communication by reading inverse product ID");*/
+	/*k_busy_wait(DELAY_READ_READ);*/
+	/*TRY_R(read_register_nr(spec, REG_Inverse_Product_ID, &received_product_id));*/
+	/*if (received_product_id != Expected_Inverse_Product_ID) {*/
+	/*	LOG_ERR("Read inverse product ID %#x, but expected %#x, could not verify "*/
+	/*		"communication with sensor!",*/
+	/*		received_product_id, Expected_Inverse_Product_ID);*/
+	/*	spi_release_dt(spec);*/
+	/*	return -EIO;*/
+	/*}*/
+	/*LOG_DBG("Verified inverse product ID!");*/
+	/**/
+	/*TRY(spi_release_dt(spec));*/
 	LOG_INF("Done!");
 	return 0;
 }
 
 int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
-	if ((enum sensor_channel_pmw3389)chan != SENSOR_CHAN_PMW3389_DISTANCE_X &&
-        (enum sensor_channel_pmw3389)chan != SENSOR_CHAN_PMW3389_DISTANCE_Y &&
-	    (enum sensor_channel_pmw3389)chan != SENSOR_CHAN_ALL) {
-		return -EINVAL;
-	}
-
-	const struct pmw3389_config *config = dev->config;
-	const struct spi_dt_spec *spec = &config->spi;
-	struct pmw3389_data *data = dev->data;
-
-#ifdef FETCH_USING_BURST_READ
-	TRY(fetch_burst(spec, &data->delta_x, &data->delta_y, NULL));
-#else
-	fetch_manual(spec, &data->delta_x, &data->delta_y);
-#endif
+    LOG_DBG("PMW3389 SAMPLE FETCH");
+/*	if ((enum sensor_channel_pmw3389)chan != SENSOR_CHAN_PMW3389_DISTANCE_X &&*/
+/*        (enum sensor_channel_pmw3389)chan != SENSOR_CHAN_PMW3389_DISTANCE_Y &&*/
+/*	    (enum sensor_channel_pmw3389)chan != SENSOR_CHAN_ALL) {*/
+/*		return -EINVAL;*/
+/*	}*/
+/**/
+/*	const struct pmw3389_config *config = dev->config;*/
+/*	const struct spi_dt_spec *spec = &config->spi;*/
+/*	struct pmw3389_data *data = dev->data;*/
+/**/
+/*#ifdef FETCH_USING_BURST_READ*/
+/*	TRY(fetch_burst(spec, &data->delta_x, &data->delta_y, NULL));*/
+/*#else*/
+/*	fetch_manual(spec, &data->delta_x, &data->delta_y);*/
+/*#endif*/
 	return 0;
 }
 
 int pmw3389_channel_get(const struct device *dev, enum sensor_channel chan,
 			struct sensor_value *val)
 {
-	const struct pmw3389_config *config = dev->config;
-	const struct pmw3389_data *data = dev->data;
-
-	int16_t counts;
-
-	switch ((int)chan) {
-	case SENSOR_CHAN_PMW3389_DISTANCE_X:
-		counts = data->delta_x;
-		break;
-	case SENSOR_CHAN_PMW3389_DISTANCE_Y:
-		counts = data->delta_y;
-		break;
-	default:
-		return -ENOTSUP;
-	}
-
-	TRY(sensor_value_from_double(val, (double)counts / (39.3700787 * config->resolution_cpi)));
-
+    LOG_DBG("PMW3389 CHANNEL GET");
+	/*const struct pmw3389_config *config = dev->config;*/
+	/*const struct pmw3389_data *data = dev->data;*/
+	/**/
+	/*int16_t counts;*/
+	/**/
+	/*switch ((int)chan) {*/
+	/*case SENSOR_CHAN_PMW3389_DISTANCE_X:*/
+	/*	counts = data->delta_x;*/
+	/*	break;*/
+	/*case SENSOR_CHAN_PMW3389_DISTANCE_Y:*/
+	/*	counts = data->delta_y;*/
+	/*	break;*/
+	/*default:*/
+	/*	return -ENOTSUP;*/
+	/*}*/
+	/**/
+	/*TRY(sensor_value_from_double(val, (double)counts / (39.3700787 * config->resolution_cpi)));*/
+	/**/
 	return 0;
 }
 
@@ -499,8 +504,8 @@ static const struct sensor_driver_api pmw3389_api = {
 	static struct pmw3389_data pmw3389_data_##n;                                               \
 	static const struct pmw3389_config pmw3389_config_##n = {                                  \
 		.spi = SPI_DT_SPEC_INST_GET(n,                                                     \
-					    SPI_OP_MODE_MASTER | SPI_WORD_SET(8U) |                \
-						    SPI_HOLD_ON_CS | SPI_MODE_CPOL |               \
+					     SPI_WORD_SET(8U) |                \
+						    SPI_MODE_CPOL |               \
 						    SPI_MODE_CPHA,                                 \
 					    0U),                                                   \
 		.resolution_cpi = 800};                                    \
