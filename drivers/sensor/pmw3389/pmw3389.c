@@ -831,6 +831,41 @@ static int pmw3389_async_init_configure(const struct device *dev)
 	return err;
 }
 
+static void check_api(const struct device *dev)
+{
+    LOG_DBG("CHECKING THE DANG OLE API");
+    if (dev->api == NULL) {
+        LOG_ERR("API pointer is NULL");
+    } else {
+        LOG_DBG("API pointer is valid");
+        const struct sensor_driver_api *api = (const struct sensor_driver_api *)dev->api;
+
+        if (api->attr_set == NULL) {
+            LOG_ERR("attr_set function is NULL");
+        } else {
+            LOG_DBG("attr_set function is valid");
+        }
+
+        if (api->sample_fetch == NULL) {
+            LOG_ERR("sample_fetch function is NULL");
+        } else {
+            LOG_DBG("sample_fetch function is valid");
+        }
+
+        if (api->channel_get == NULL) {
+            LOG_ERR("channel_get function is NULL");
+        } else {
+            LOG_DBG("channel_get function is valid");
+        }
+
+        if (api->trigger_set == NULL) {
+            LOG_ERR("trigger_set function is NULL");
+        } else {
+            LOG_DBG("trigger_set function is valid");
+        }
+    }
+}
+
 static void pmw3389_async_init(struct k_work *work)
 {
 	struct pmw3389_data *data = CONTAINER_OF(work, struct pmw3389_data,
@@ -848,6 +883,7 @@ static void pmw3389_async_init(struct k_work *work)
 		if (data->async_init_step == ASYNC_INIT_STEP_COUNT) {
 			data->ready = true;
 			LOG_INF("PMW3389 initialized");
+            check_api(dev);
             if (dev == NULL) {
                 LOG_ERR("Failed to get PMW3389 binding");
             } else {
@@ -865,6 +901,8 @@ static void pmw3389_async_init(struct k_work *work)
 		}
 	}
 }
+
+
 
 static int pmw3389_init_irq(const struct device *dev)
 {
