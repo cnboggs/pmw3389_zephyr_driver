@@ -853,7 +853,7 @@ static int pmw3389_init(const struct device *dev)
 	const struct pmw3389_config *config = dev->config;
 	int err;
 
-    err = write_register_nr(&config->bus, PMW3389_REG_POWER_UP_RESET, 0x5A))
+    err = write_register_nr(&config->bus, PMW3389_REG_POWER_UP_RESET, 0x5A);
     if (err < 0) {
         LOG_ERR("Failed to send reset command to PMW3389");
         return err;
