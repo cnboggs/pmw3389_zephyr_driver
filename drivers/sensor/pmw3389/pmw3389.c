@@ -89,7 +89,7 @@ LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
 #define PMW3389_REG_PWM_WIDTH_CNT               0x74
 
 /* Sensor identification values */
-#define PMW3389_PRODUCT_ID			0x42
+#define PMW3389_PRODUCT_ID			0x47
 #define PMW3389_FIRMWARE_ID			0xE8
 
 /* Max register count readable in a single motion burst */
