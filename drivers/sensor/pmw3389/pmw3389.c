@@ -833,17 +833,26 @@ static int pmw3389_init_irq(const struct device *dev)
 
 static int pmw3389_init(const struct device *dev)
 {
-    k_msleep(10000);
     LOG_INF("PMW3389 Initializing");
     LOG_INF("PMW3389 Initializing");
     LOG_INF("PMW3389 Initializing");
     LOG_DBG("PMW3389 Initializing");
     LOG_DBG("PMW3389 Initializing");
     LOG_DBG("PMW3389 Initializing");
-	/*struct pmw3389_data *data = dev->data;*/
-	/*const struct pmw3389_config *config = dev->config;*/
-	/*int err;*/
-	/**/
+	struct pmw3389_data *data = dev->data;
+	const struct pmw3389_config *config = dev->config;
+	int err;
+
+    // Send a simple initialization command (for example, reset)
+    uint8_t reset_cmd[] = {0x5A};  // Replace with an actual command
+    err = spi_write_dt(&config->bus, reset_cmd, sizeof(reset_cmd));
+    if (err < 0) {
+        LOG_ERR("Failed to send reset command to PMW3389");
+        return err;
+    }
+
+    spi_release_dt(&config->bus);
+
 	/*data->dev = dev;*/
 	/*k_work_init(&data->trigger_handler_work, trigger_handler);*/
 	/**/
@@ -872,9 +881,9 @@ static int pmw3389_init(const struct device *dev)
 	/**/
 	/*k_work_schedule(&data->init_work,*/
 	/*		K_MSEC(async_init_delay[data->async_init_step]));*/
-	/**/
-	/*return err;*/
-    return 0;
+
+    LOG_INF("PMW3389 DONE INITIALIZING");
+	return err;
 }
 
 static int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
