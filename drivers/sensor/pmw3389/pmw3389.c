@@ -897,6 +897,8 @@ static int pmw3389_init_irq(const struct device *dev)
 
 static int pmw3389_init(const struct device *dev)
 {
+    k_msleep(2000);
+    //
     struct pmw3389_data *data = dev->data;
 	const struct pmw3389_config *config = dev->config;
 	int err;
