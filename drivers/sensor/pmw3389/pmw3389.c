@@ -831,6 +831,35 @@ static int pmw3389_async_init_configure(const struct device *dev)
 	return err;
 }
 
+static int pmw3389_init_irq(const struct device *dev)
+{
+	int err;
+	struct pmw3389_data *data = dev->data;
+	const struct pmw3389_config *config = dev->config;
+
+	if (!device_is_ready(config->irq_gpio.port)) {
+		LOG_ERR("IRQ GPIO device not ready");
+		return -ENODEV;
+	}
+
+	err = gpio_pin_configure_dt(&config->irq_gpio, GPIO_INPUT);
+	if (err) {
+		LOG_ERR("Cannot configure IRQ GPIO");
+		return err;
+	}
+
+	gpio_init_callback(&data->irq_gpio_cb, irq_handler,
+			   BIT(config->irq_gpio.pin));
+
+	err = gpio_add_callback(config->irq_gpio.port, &data->irq_gpio_cb);
+	if (err) {
+		LOG_ERR("Cannot add IRQ GPIO callback");
+	}
+    LOG_DBG("PMW3389 Initialized IRQ GPIO!");
+
+	return err;
+}
+
 static void pmw3389_async_init(struct k_work *work)
 {
 	struct pmw3389_data *data = CONTAINER_OF(work, struct pmw3389_data,
@@ -884,35 +913,6 @@ static void pmw3389_async_init(struct k_work *work)
 						data->async_init_step]));
 		}
 	}
-}
-
-static int pmw3389_init_irq(const struct device *dev)
-{
-	int err;
-	struct pmw3389_data *data = dev->data;
-	const struct pmw3389_config *config = dev->config;
-
-	if (!device_is_ready(config->irq_gpio.port)) {
-		LOG_ERR("IRQ GPIO device not ready");
-		return -ENODEV;
-	}
-
-	err = gpio_pin_configure_dt(&config->irq_gpio, GPIO_INPUT);
-	if (err) {
-		LOG_ERR("Cannot configure IRQ GPIO");
-		return err;
-	}
-
-	gpio_init_callback(&data->irq_gpio_cb, irq_handler,
-			   BIT(config->irq_gpio.pin));
-
-	err = gpio_add_callback(config->irq_gpio.port, &data->irq_gpio_cb);
-	if (err) {
-		LOG_ERR("Cannot add IRQ GPIO callback");
-	}
-    LOG_DBG("PMW3389 Initialized IRQ GPIO!");
-
-	return err;
 }
 
 static int pmw3389_init(const struct device *dev)
