@@ -90,7 +90,7 @@ LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
 
 /* Sensor identification values */
 #define PMW3389_PRODUCT_ID			0x42
-#define PMW3389_FIRMWARE_ID			0x04
+#define PMW3389_FIRMWARE_ID			0xE8
 
 /* Max register count readable in a single motion burst */
 #define PMW3389_MAX_BURST_SIZE			12
@@ -431,6 +431,7 @@ static int burst_write(const struct device *dev, uint8_t reg, const uint8_t *buf
 
 static int update_cpi(const struct device *dev, uint32_t cpi)
 {
+    // TODO: update this to handle 50 as min
 	/* Set resolution with CPI step of 50 cpi
 	 * 0x00: 100 cpi (minimum cpi)
 	 * 0x01: 150 cpi
@@ -671,6 +672,7 @@ static int pmw3389_async_init_fw_load_verify(const struct device *dev)
 		return err;
 	}
 
+    LOG_DBG("Product ID: 0x%x", product_id);
 	if (product_id != PMW3389_PRODUCT_ID) {
 		LOG_ERR("Invalid product id!");
 		return -EIO;
