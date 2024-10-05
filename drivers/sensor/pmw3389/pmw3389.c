@@ -696,7 +696,7 @@ static int pmw3389_async_init_fw_load_verify(const struct device *dev)
 	}
 
     /*const struct device *dev = device_get_binding("PMW3389_0");*/
-    const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(motion_sensor));
+    /*const struct device *dev = DEVICE_DT_GET(DT_NODELABEL(motion_sensor));*/
     if (dev == NULL) {
         LOG_ERR("Failed to get PMW3389 binding");
     } else {
