@@ -859,38 +859,39 @@ static int pmw3389_init(const struct device *dev)
         return err;
     }
 
-    spi_release_dt(&config->bus);
+	data->dev = dev;
+	k_work_init(&data->trigger_handler_work, trigger_handler);
 
-	/*data->dev = dev;*/
-	/*k_work_init(&data->trigger_handler_work, trigger_handler);*/
-	/**/
-	/*if (!spi_is_ready_dt(&config->bus)) {*/
-	/*	LOG_ERR("SPI device not ready");*/
-	/*	return -ENODEV;*/
-	/*}*/
-	/**/
-	/*if (!device_is_ready(config->cs_gpio.port)) {*/
-	/*	LOG_ERR("SPI CS device not ready");*/
-	/*	return -ENODEV;*/
-	/*}*/
-	/**/
-	/*err = gpio_pin_configure_dt(&config->cs_gpio, GPIO_OUTPUT_INACTIVE);*/
-	/*if (err) {*/
-	/*	LOG_ERR("Cannot configure SPI CS GPIO");*/
-	/*	return err;*/
-	/*}*/
-	/**/
-	/*err = pmw3389_init_irq(dev);*/
-	/*if (err) {*/
-	/*	return err;*/
-	/*}*/
-	/**/
-	/*k_work_init_delayable(&data->init_work, pmw3389_async_init);*/
+	if (!spi_is_ready_dt(&config->bus)) {
+		LOG_ERR("SPI device not ready");
+		return -ENODEV;
+	}
+
+	if (!device_is_ready(config->cs_gpio.port)) {
+		LOG_ERR("SPI CS device not ready");
+		return -ENODEV;
+	}
+
+	err = gpio_pin_configure_dt(&config->cs_gpio, GPIO_OUTPUT_INACTIVE);
+	if (err) {
+		LOG_ERR("Cannot configure SPI CS GPIO");
+		return err;
+	}
+
+	err = pmw3389_init_irq(dev);
+	if (err) {
+		return err;
+	}
+
+	// k_work_init_delayable(&data->init_work, pmw3389_async_init);
 	/**/
 	/*k_work_schedule(&data->init_work,*/
 	/*		K_MSEC(async_init_delay[data->async_init_step]));*/
 
+    spi_release_dt(&config->bus);
+
     LOG_INF("PMW3389 DONE INITIALIZING");
+
 	return err;
 }
 
@@ -1134,4 +1135,4 @@ static const struct pmw3389_config config0 = {
 	.cs_gpio = SPI_CS_GPIOS_DT_SPEC_GET(DT_DRV_INST(0)),
 };
 
-DEVICE_DT_INST_DEFINE(0, pmw3389_init, NULL, &data0, &config0, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, NULL);
+DEVICE_DT_INST_DEFINE(0, pmw3389_init, NULL, &data0, &config0, POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, &pmw3389_driver_api);
