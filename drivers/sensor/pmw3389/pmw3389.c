@@ -446,8 +446,9 @@ int pmw3389_init(const struct device *dev)
 
 int pmw3389_sample_fetch(const struct device *dev, enum sensor_channel chan)
 {
-	if (chan != SENSOR_CHAN_PMW3389_DISTANCE_X && chan != SENSOR_CHAN_PMW3389_DISTANCE_Y &&
-	    chan != SENSOR_CHAN_ALL) {
+	if ((enum sensor_channel_pmw3389)chan != SENSOR_CHAN_PMW3389_DISTANCE_X &&
+        (enum sensor_channel_pmw3389)chan != SENSOR_CHAN_PMW3389_DISTANCE_Y &&
+	    (enum sensor_channel_pmw3389)chan != SENSOR_CHAN_ALL) {
 		return -EINVAL;
 	}
 
@@ -502,7 +503,7 @@ static const struct sensor_driver_api pmw3389_api = {
 						    SPI_HOLD_ON_CS | SPI_MODE_CPOL |               \
 						    SPI_MODE_CPHA,                                 \
 					    0U),                                                   \
-		.resolution_cpi = 800,                                    \
+		.resolution_cpi = 800};                                    \
 	DEVICE_DT_INST_DEFINE(n, &pmw3389_init, NULL, &pmw3389_data_##n, &pmw3389_config_##n,      \
 			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY, &pmw3389_api);
 
