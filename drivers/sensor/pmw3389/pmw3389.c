@@ -18,7 +18,8 @@
 #include "pmw3389.h"
 
 #include <zephyr/logging/log.h>
-LOG_MODULE_REGISTER(pmw3389, CONFIG_PMW3389_LOG_LEVEL);
+/*LOG_MODULE_REGISTER(pmw3389, CONFIG_PMW3389_LOG_LEVEL);*/
+LOG_MODULE_REGISTER(pmw3389, LOG_LEVEL_DBG);
 
 /* Timings defined by spec */
 #define T_NCS_SCLK	    1			            /* 120 ns */
