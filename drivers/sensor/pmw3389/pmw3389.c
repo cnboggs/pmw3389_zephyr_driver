@@ -1153,7 +1153,7 @@ static const struct sensor_driver_api pmw3389_driver_api = {
 	};								       \
 									       \
 	SENSOR_DEVICE_DT_INST_DEFINE(n, pmw3389_init, NULL, &data##n, &config##n,     \
-			      POST_KERNEL, CONFIG_SENSOR_INIT_PRIORITY,	       \
+			      APPLICATION, CONFIG_SENSOR_INIT_PRIORITY,	       \
 			      &pmw3389_driver_api);
 
 #if DT_HAS_COMPAT_STATUS_OKAY(pixart_pmw3389)
